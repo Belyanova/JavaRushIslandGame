@@ -1,0 +1,100 @@
+{
+  "entities": {
+    "wolf": {
+      "weight": 50.0,
+      "maxCountOnField": 30,
+      "speed": 3,
+      "kilogramsOfFoodToFillYouUp": 8.0
+    },
+    "python": {
+      "weight": 15.0,
+      "maxCountOnField": 30,
+      "speed": 1,
+      "kilogramsOfFoodToFillYouUp": 3.0
+    },
+    "fox": {
+      "weight": 8.0,
+      "maxCountOnField": 30,
+      "speed": 2,
+      "kilogramsOfFoodToFillYouUp": 2.0
+    },
+    "bear": {
+      "weight": 500.0,
+      "maxCountOnField": 5,
+      "speed": 2,
+      "kilogramsOfFoodToFillYouUp": 80.0
+    },
+    "eagle": {
+      "weight": 6.0,
+      "maxCountOnField": 20,
+      "speed": 3,
+      "kilogramsOfFoodToFillYouUp": 1.0
+    },
+    "horse": {
+      "weight": 400.0,
+      "maxCountOnField": 20,
+      "speed": 4,
+      "kilogramsOfFoodToFillYouUp": 60.0
+    },
+    "deer": {
+      "weight": 300.0,
+      "maxCountOnField": 20,
+      "speed": 4,
+      "kilogramsOfFoodToFillYouUp": 50.0
+    },
+    "rabbit": {
+      "weight": 2.0,
+      "maxCountOnField": 150,
+      "speed": 2,
+      "kilogramsOfFoodToFillYouUp": 0.45
+    },
+    "mouse": {
+      "weight": 0.05,
+      "maxCountOnField": 500,
+      "speed": 1,
+      "kilogramsOfFoodToFillYouUp": 0.01
+    },
+    "goat": {
+      "weight": 60.0,
+      "maxCountOnField": 140,
+      "speed": 3,
+      "kilogramsOfFoodToFillYouUp": 10.0
+    },
+    "sheep": {
+      "weight": 70.0,
+      "maxCountOnField": 140,
+      "speed": 3,
+      "kilogramsOfFoodToFillYouUp": 15.0
+    },
+    "boar": {
+      "weight": 400.0,
+      "maxCountOnField": 50,
+      "speed": 2,
+      "kilogramsOfFoodToFillYouUp": 50.0
+    },
+    "buffalo": {
+      "weight": 700.0,
+      "maxCountOnField": 10,
+      "speed": 3,
+      "kilogramsOfFoodToFillYouUp": 100.0
+    },
+    "duck": {
+      "weight": 1.0,
+      "maxCountOnField": 200,
+      "speed": 4,
+      "kilogramsOfFoodToFillYouUp": 0.15
+    },
+    "caterpillar": {
+      "weight": 0.01,
+      "maxCountOnField": 1000,
+      "speed": 0,
+      "kilogramsOfFoodToFillYouUp": 0.0
+    },
+    "grass": {
+      "weight": 1.0,
+      "maxCountOnField": 200,
+      "speed": null,
+      "kilogramsOfFoodToFillYouUp": null
+    }
+  }
+}
