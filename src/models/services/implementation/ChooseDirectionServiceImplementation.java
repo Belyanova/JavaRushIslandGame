@@ -1,14 +1,14 @@
-package models.services;
+package models.services.implementation;
 
 import models.enums.DirectionType;
 
 import java.util.Random;
 
-public class ChooseDirectionService {
+public class ChooseDirectionServiceImplementation {
 
     private final Random random;
 
-    public ChooseDirectionService(Random random) {
+    public ChooseDirectionServiceImplementation(Random random) {
         this.random = random;
     }
 

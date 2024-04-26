@@ -10,22 +10,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static models.constants.Constants.PATH_TO_ENTITY_CHARACTERISTICS;
+
 public class EntityCharacteristicsConfig {
-    /*private Map<EntityType, Entity> entityMapConfig;
-
-    public Map<EntityType, Entity> getEntityMapConfig() {
-        return entityMapConfig;
-    }
-
-    public EntityCharacteristicsConfig(ObjectMapper objectMapper, String pathToJson) {
-        //код который парсит json конфиг нужно написать
-        HashMap<EntityType, Entity> entityMapConfig = new HashMap<>();
-
-        entityMapConfig.put(EntityType.GRASS, new Entity(10.0, 12, 12, 34.0));
-        entityMapConfig.put(EntityType.WOLF, new Entity(10.0, 12, 12, 34.0));
-        this.entityMapConfig = entityMapConfig;
-    }*/
-
     private Map<EntityType, Entity> entityMapConfig;
 
     public Map<EntityType, Entity> getEntityMapConfig() {
@@ -37,7 +24,7 @@ public class EntityCharacteristicsConfig {
 
         try {
             // Чтение JSON из файла и преобразование в объект Java
-            File jsonFile = new File("resources/entity_characteristics.json");
+            File jsonFile = new File(PATH_TO_ENTITY_CHARACTERISTICS);
             EntityJsonData entityJsonData = objectMapper.readValue(jsonFile, EntityJsonData.class);
 
             // Заполнение entityMapConfig сущностями
