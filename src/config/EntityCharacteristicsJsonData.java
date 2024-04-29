@@ -1,8 +1,8 @@
-package models.services;
+package config;
 
 import java.util.Map;
 
-public class EntityJsonData {
+public class EntityCharacteristicsJsonData {
     private Map<String, EntityData> entities;
 
     public Map<String, EntityData> getEntities() {

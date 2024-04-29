@@ -25,13 +25,16 @@ public class Main {
         EntityCharacteristicsConfig entityCharacteristicsConfig = new EntityCharacteristicsConfig(objectMapper, PATH_TO_ENTITY_CHARACTERISTICS);
         PossibilityOfBeingEatenConfig possibilityOfBeingEatenConfig = new PossibilityOfBeingEatenConfig(objectMapper, PATH_TO_POSSIBILITY_OF_BEING_EATEN);
         IslandConfig islandConfig = new IslandConfig(PATH_TO_ISLAND_SETTINGS);
-        //этап изменения дефолтных настроек
+        //этап изменения дефолтных настроек вынести в отдельный метод
         //System.out.println("Будешь что-то менять?");
         //islandConfig.setWidth(10);
         //islandConfig.setHeight(2);
 
         //создаем остров (100 на 20 клеток)
         Island island = createIsland(islandConfig);
+        //восстанавливаем сожранные растения
+        island.refillPlants(5, entityCharacteristicsConfig);
+        //сервис передвижения животных
         MoveService moveService = new MoveServiceImplementation(island);
 
         //параллельными потоками наполняем остров рандомным количеством животных

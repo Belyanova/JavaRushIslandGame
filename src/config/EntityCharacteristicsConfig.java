@@ -3,7 +3,6 @@ package config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import models.abstracts.Entity;
 import models.enums.EntityType;
-import models.services.EntityJsonData;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,12 +24,12 @@ public class EntityCharacteristicsConfig {
         try {
             // Чтение JSON из файла и преобразование в объект Java
             File jsonFile = new File(PATH_TO_ENTITY_CHARACTERISTICS);
-            EntityJsonData entityJsonData = objectMapper.readValue(jsonFile, EntityJsonData.class);
+            EntityCharacteristicsJsonData entityCharacteristicsJsonData = objectMapper.readValue(jsonFile, EntityCharacteristicsJsonData.class);
 
             // Заполнение entityMapConfig сущностями
-            for (Map.Entry<String, EntityJsonData.EntityData> entry : entityJsonData.getEntities().entrySet()) {
+            for (Map.Entry<String, EntityCharacteristicsJsonData.EntityData> entry : entityCharacteristicsJsonData.getEntities().entrySet()) {
                 String entityName = entry.getKey();
-                EntityJsonData.EntityData entityData = entry.getValue();
+                EntityCharacteristicsJsonData.EntityData entityData = entry.getValue();
 
                 EntityType entityType = EntityType.valueOf(entityName.toUpperCase());
                 Entity entity = new Entity(entityData.getWeight(), entityData.getMaxCountOnField(), entityData.getSpeed(), entityData.getKilogramsOfFoodToFillYouUp());

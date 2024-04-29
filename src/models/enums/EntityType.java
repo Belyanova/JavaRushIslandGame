@@ -1,5 +1,6 @@
 package models.enums;
 
+import models.abstracts.Entity;
 import models.herbivores.*;
 import models.plans.Grass;
 import models.predators.*;
@@ -32,5 +33,14 @@ public enum EntityType {
 
     public Class<?> getAClass() {
         return aclass;
+    }
+
+    public static EntityType ofClass(Class<? extends Entity> entityClass) {
+        for (EntityType entityType : values()) {
+            if (entityType.getAClass().equals(entityClass)) {
+                return entityType;
+            }
+        }
+        throw new IllegalArgumentException("No EntityType found for class: " + entityClass.getName());
     }
 }
