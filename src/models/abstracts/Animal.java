@@ -5,6 +5,7 @@ import models.services.AnimalCharacteristics;
 public abstract class Animal extends Entity implements AnimalCharacteristics {
 
     private boolean isMoved;
+    private boolean isNewBornAnimal;
     private int healthPercentage;
 
     public Animal(Double weight, Integer maxCountOnField, Integer speed, Double kilogramsOfFoodToFillYouUp) {

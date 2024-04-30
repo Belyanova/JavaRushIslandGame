@@ -1,6 +1,5 @@
 package models;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import config.EntityCharacteristicsConfig;
 import models.abstracts.Animal;
 import models.abstracts.Entity;
@@ -8,16 +7,16 @@ import models.enums.EntityType;
 import models.island.Field;
 import models.plans.Grass;
 import models.plans.Plant;
+import models.services.IslandAction;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import static models.constants.Constants.PATH_TO_ENTITY_CHARACTERISTICS;
 
-public class Island {
-    private Map<Field, List<Entity>> island;
+public class Island implements IslandAction {
+    private final Map<Field, List<Entity>> island;
 
     public Map<Field, List<Entity>> getIsland() {
         return island;
@@ -27,6 +26,7 @@ public class Island {
         this.island = island;
     }
 
+    @Override
     public void removeDeathAnimal(){
         for (Entry<Field, List<Entity>> fieldListEntry : island.entrySet()) {
             var allAnimal = fieldListEntry.getValue();
@@ -42,6 +42,7 @@ public class Island {
         }
     }
 
+    @Override
     public void refillPlants(int maxCountOfPlantInOneField, EntityCharacteristicsConfig entityCharacteristicsConfig){
         for(var value : island.entrySet()){
             var totalCountOfPlants = island

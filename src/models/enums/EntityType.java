@@ -43,4 +43,13 @@ public enum EntityType {
         }
         throw new IllegalArgumentException("No EntityType found for class: " + entityClass.getName());
     }
+
+    public static EntityType getByEntityClass(Class<? extends Entity> entityClass) {
+        for (EntityType type : EntityType.values()) {
+            if (type.getAClass().equals(entityClass)) {
+                return type;
+            }
+        }
+        throw new IllegalArgumentException("No EntityType found for class: " + entityClass.getName());
+    }
 }

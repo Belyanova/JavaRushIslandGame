@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static models.constants.Constants.*;
+import static models.services.StatisticsService.printCellStatistics;
 
 public class Main {
     public static void main(String[] args) {
@@ -27,13 +28,13 @@ public class Main {
         IslandConfig islandConfig = new IslandConfig(PATH_TO_ISLAND_SETTINGS);
         //этап изменения дефолтных настроек вынести в отдельный метод
         //System.out.println("Будешь что-то менять?");
-        //islandConfig.setWidth(10);
-        //islandConfig.setHeight(2);
+        islandConfig.setWidth(1);
+        islandConfig.setHeight(2);
 
         //создаем остров (100 на 20 клеток)
         Island island = createIsland(islandConfig);
         //восстанавливаем сожранные растения
-        island.refillPlants(5, entityCharacteristicsConfig);
+        //island.refillPlants(5, entityCharacteristicsConfig);
         //сервис передвижения животных
         MoveService moveService = new MoveServiceImplementation(island);
 
@@ -48,6 +49,8 @@ public class Main {
                 );
             });
         });
+
+        printCellStatistics(island, islandConfig);
 
         //передвижение животных
         ChooseDirectionServiceImplementation chooseDirectionServiceImplementation = new ChooseDirectionServiceImplementation(random);
