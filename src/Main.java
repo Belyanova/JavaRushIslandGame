@@ -111,11 +111,13 @@ public class Main {
                     case MOVE:
                         actions.add(() -> moveService.
                                 move(animal, coordinates, chooseService.chooseDirection(random), animalAction.
-                                        getSpeed(entityCharacteristicsConfig, EntityType.getByEntityClass(
-                                                animal.getClass())), islandConfig, islandActionImplementation));
+                                        getSpeed(entityCharacteristicsConfig,
+                                                EntityType.getByEntityClass(animal.getClass())), islandConfig,
+                                        islandActionImplementation, entityCharacteristicsConfig));
                         break;
                     case MULTIPLY:
-                        actions.add(() -> multiplyService.multiply(animal, coordinates,islandActionImplementation));
+                        actions.add(() -> multiplyService.multiply(
+                                animal, coordinates,islandActionImplementation, entityCharacteristicsConfig));
                         break;
                 }
             }
