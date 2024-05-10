@@ -12,9 +12,7 @@ public class ChooseDirectionServiceImplementation {
         this.random = random;
     }
 
-    public DirectionType chooseDirection(){
-        random.nextInt(4);
-
+    public DirectionType chooseDirection(Random random){
         return DirectionType.values()[random.nextInt(DirectionType.values().length)];
     }
 }

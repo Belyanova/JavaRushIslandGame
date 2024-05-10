@@ -16,7 +16,8 @@ public class PossibilityOfBeingEatenConfig {
     public PossibilityOfBeingEatenConfig(ObjectMapper objectMapper, String pathToJson) {
         try {
             File jsonFile = new File(pathToJson);
-            List<PossibilityData> possibilityDataList = objectMapper.readValue(jsonFile, objectMapper.getTypeFactory().constructCollectionType(List.class, PossibilityData.class));
+            List<PossibilityData> possibilityDataList = objectMapper.readValue(
+                    jsonFile, objectMapper.getTypeFactory().constructCollectionType(List.class, PossibilityData.class));
 
             // Задание порога вероятности из JSON
             this.probabilityThreshold = possibilityDataList.get(0).percent; // Возьмем порог из первого объекта, предполагая, что все объекты имеют одинаковый порог

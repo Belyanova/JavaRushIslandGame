@@ -33,8 +33,16 @@ public abstract class Animal extends Entity implements AnimalCharacteristics {
         this.healthPercentage -= decreaseFor;
     }
 
+    public void increaseHealthPercentage(int increaseFor) {
+        this.healthPercentage += increaseFor;
+    }
+
     public boolean isMoved() {
         return isMoved;
+    }
+
+    public boolean setIsMoved(Boolean moved){
+        return isMoved = moved;
     }
 
     public int getHealthPercentage() {

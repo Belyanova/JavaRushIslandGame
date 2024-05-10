@@ -2,20 +2,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import config.EntityCharacteristicsConfig;
 import config.IslandConfig;
 import config.PossibilityOfBeingEatenConfig;
-import models.Island;
+import models.plans.Plant;
+import models.services.AnimalAction;
+import models.services.MultiplyService;
+import models.services.implementation.*;
 import models.abstracts.Animal;
-import models.abstracts.Entity;
+import models.enums.Action;
 import models.enums.EntityType;
-import models.island.Field;
+import models.services.EatenService;
 import models.services.MoveService;
-import models.services.implementation.ChooseDirectionServiceImplementation;
-import models.services.implementation.MoveServiceImplementation;
 
-import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static models.services.implementation.islandActionImplementation.*;
 import static models.constants.Constants.*;
 import static models.services.StatisticsService.printCellStatistics;
 
@@ -23,25 +24,63 @@ public class Main {
     public static void main(String[] args) {
         Random random = new Random();
         ObjectMapper objectMapper = new ObjectMapper();
-        EntityCharacteristicsConfig entityCharacteristicsConfig = new EntityCharacteristicsConfig(objectMapper, PATH_TO_ENTITY_CHARACTERISTICS);
-        PossibilityOfBeingEatenConfig possibilityOfBeingEatenConfig = new PossibilityOfBeingEatenConfig(objectMapper, PATH_TO_POSSIBILITY_OF_BEING_EATEN);
+        EntityCharacteristicsConfig entityCharacteristicsConfig = new EntityCharacteristicsConfig(
+                objectMapper, PATH_TO_ENTITY_CHARACTERISTICS);
         IslandConfig islandConfig = new IslandConfig(PATH_TO_ISLAND_SETTINGS);
-        //этап изменения дефолтных настроек вынести в отдельный метод
-        //System.out.println("Будешь что-то менять?");
-        islandConfig.setWidth(1);
-        islandConfig.setHeight(2);
+        PossibilityOfBeingEatenConfig possibilityOfBeingEatenConfig = new PossibilityOfBeingEatenConfig(
+                objectMapper, PATH_TO_POSSIBILITY_OF_BEING_EATEN);
 
-        //создаем остров (100 на 20 клеток)
-        Island island = createIsland(islandConfig);
-        //восстанавливаем сожранные растения
-        //island.refillPlants(5, entityCharacteristicsConfig);
-        //сервис передвижения животных
-        MoveService moveService = new MoveServiceImplementation(island);
+        System.out.println("Default program launch settings:");
+        System.out.println("Island width: " + islandConfig.getWidth());
+        System.out.println("Island height: " + islandConfig.getHeight());
+        System.out.println("Island days: " + islandConfig.getDays());
+        System.out.println("Should we leave the default settings? yes/no");
 
-        //параллельными потоками наполняем остров рандомным количеством животных
+        Scanner scanner = new Scanner(System.in);
+        String input = scanner.nextLine();
+        if (input.equals("no")) {
+            updateIslandSettings(scanner, islandConfig);
+        }
+
+        islandActionImplementation islandActionImplementation = createIsland(islandConfig);
+        AnimalAction animalAction = new AnimalActionImplementation();
+        MoveService moveService = new MoveServiceImplementation(islandActionImplementation);
+        ChooseDirectionServiceImplementation chooseService = new ChooseDirectionServiceImplementation(random);
+        EatenService eatenService = new EatenServiceImplementation(islandActionImplementation);
+        MultiplyService multiplyService = new MultiplyServiceImplementation(islandActionImplementation);
+
+        fillIslandWithAnimals(entityCharacteristicsConfig, islandActionImplementation, random);
+        printCellStatistics(islandActionImplementation, islandConfig);
+
+        for (int i = 1; i < islandConfig.getDays() + 1; i++) {
+            System.out.println("Day № " + i);
+            System.out.println("________________________________________________");
+            List<Runnable> actions = new ArrayList<>();
+            executeAnimalsActions(
+                    islandActionImplementation, actions, eatenService, random, moveService, chooseService,
+                    animalAction, entityCharacteristicsConfig, islandConfig, multiplyService);
+            actions.forEach(Runnable::run);
+            printCellStatistics(islandActionImplementation, islandConfig);
+            refillPlants(islandActionImplementation, entityCharacteristicsConfig);
+            islandActionImplementation.removeDeathAnimal();
+        }
+    }
+
+    private static void updateIslandSettings(Scanner scanner, IslandConfig islandConfig) {
+        System.out.println("Enter the width of the island");
+        islandConfig.setWidth(scanner.nextInt());
+        System.out.println("Enter the height of the island");
+        islandConfig.setHeight(scanner.nextInt());
+        System.out.println("Enter the days of the island");
+        islandConfig.setDays(scanner.nextInt());
+    }
+
+    private static void fillIslandWithAnimals(
+            EntityCharacteristicsConfig entityCharacteristicsConfig,
+            islandActionImplementation islandActionImplementation, Random random) {
         Arrays.stream(EntityType.values()).parallel().forEach(entityType -> {
             int maxCount = getMaxCountOnField(entityCharacteristicsConfig, entityType);
-            island.getIsland().values().parallelStream().forEach(value -> {
+            islandActionImplementation.getIsland().values().parallelStream().forEach(value -> {
                 value.addAll(
                         IntStream.range(0, random.nextInt(maxCount))
                                 .mapToObj(i -> createEntity(entityCharacteristicsConfig, entityType))
@@ -49,66 +88,53 @@ public class Main {
                 );
             });
         });
+    }
 
-        printCellStatistics(island, islandConfig);
+    private static void executeAnimalsActions(
+            islandActionImplementation islandActionImplementation, List<Runnable> actions, EatenService eatenService,
+            Random random, MoveService moveService, ChooseDirectionServiceImplementation chooseService,
+            AnimalAction animalAction, EntityCharacteristicsConfig entityCharacteristicsConfig,
+            IslandConfig islandConfig, MultiplyService multiplyService) {
+        islandActionImplementation.getIsland().forEach((coordinates, entities) -> {
+            List<Animal> animals = entities.stream()
+                    .filter(entity -> entity instanceof Animal)
+                    .map(entity -> (Animal) entity)
+                    .collect(Collectors.toList());
 
-        //передвижение животных
-        ChooseDirectionServiceImplementation chooseDirectionServiceImplementation = new ChooseDirectionServiceImplementation(random);
-        int wolfSpeed = getSpeed(entityCharacteristicsConfig, EntityType.WOLF);
-        var directonToMove = chooseDirectionServiceImplementation.chooseDirection();
-
-        for (Map.Entry<Field, List<Entity>> fieldListEntry : island.getIsland().entrySet()) {
-            Field field = fieldListEntry.getKey();
-            List<Animal> entities = fieldListEntry.getValue()
-                    .stream()
-                    .filter(Animal.class::isInstance)
-                    .map(entity -> (Animal) entity )
-                    .toList();
-            for (Animal entity : entities){
-                moveService.move(entity, field, directonToMove, wolfSpeed);
+            for (Animal animal : animals) {
+                animal.setIsMoved(false);
+                Action action = Action.getRandomAction();
+                switch (action) {
+                    case EAT:
+                        actions.add(()-> eatenService.eating(animal, coordinates, islandActionImplementation, random));
+                        break;
+                    case MOVE:
+                        actions.add(() -> moveService.
+                                move(animal, coordinates, chooseService.chooseDirection(random), animalAction.
+                                        getSpeed(entityCharacteristicsConfig, EntityType.getByEntityClass(
+                                                animal.getClass())), islandConfig, islandActionImplementation));
+                        break;
+                    case MULTIPLY:
+                        actions.add(() -> multiplyService.multiply(animal, coordinates,islandActionImplementation));
+                        break;
+                }
             }
-        }
-
-        System.out.println(island);
+        });
     }
 
-    //Создаем животных, передавая соответствующие данные из конфигов
-    private static Entity createEntity(EntityCharacteristicsConfig entityCharacteristicsConfig, EntityType entityType) {
-        try {
-            Class<?> entityClass = entityType.getAClass();
-            Constructor<?> constructor = entityClass.getConstructor(Entity.class);
-            return (Entity) constructor.newInstance(entityCharacteristicsConfig.getEntityMapConfig().get(entityType));
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new IllegalArgumentException("Unsupported entity type: " + entityType, e);
-        }
-    }
+    private static void refillPlants(
+            islandActionImplementation islandActionImplementation,
+            EntityCharacteristicsConfig entityCharacteristicsConfig) {
+        islandActionImplementation.getIsland().forEach((coordinates, entities) -> {
+            List<Plant> plants = entities.stream()
+                    .filter(entity -> entity instanceof Plant)
+                    .map(entity -> (Plant) entity)
+                    .collect(Collectors.toList());
 
-    //Определяем максимальное количество животных
-    private static Integer getMaxCountOnField(EntityCharacteristicsConfig entityCharacteristicsConfig, EntityType entityType) {
-        return entityCharacteristicsConfig
-                .getEntityMapConfig()
-                .get(entityType)
-                .getMaxCountOnField();
-    }
-
-    //Определяем скорость передвижения животных
-    private static Integer getSpeed(EntityCharacteristicsConfig entityCharacteristicsConfig, EntityType entityType) {
-        return entityCharacteristicsConfig
-                .getEntityMapConfig()
-                .get(entityType)
-                .getSpeed();
-    }
-
-    //Создаем поле на острове
-    private static Island createIsland(IslandConfig islandConfig) {
-        Map<Field, List<Entity>> island = new HashMap<>();
-        for (int i = 0; i < islandConfig.getWidth(); i++){
-            for (int j = 0; j < islandConfig.getHeight(); j++){
-                Field field = new Field(i, j);
-                island.put(field, new ArrayList<>());
+            for (Plant plant : plants) {
+                islandActionImplementation.refillPlants(plant.getMaxCountOnField(), entityCharacteristicsConfig);
             }
-        }
-        return new Island(island);
+            System.out.println("Plant is refilled on (" + coordinates.getX() + "." + coordinates.getY() + ")");
+        });
     }
 }

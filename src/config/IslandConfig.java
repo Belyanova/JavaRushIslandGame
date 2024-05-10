@@ -15,9 +15,9 @@ public class IslandConfig {
         try(BufferedReader bufferedReader = new BufferedReader(new FileReader(pathToSettingsFile))){
             Properties properties =new Properties();
             properties.load(bufferedReader);
-            this.days = Integer.parseInt(properties.getProperty("island.days"));
-            this.width = Integer.parseInt(properties.getProperty("island.width"));
-            this.height = Integer.parseInt(properties.getProperty("island.height"));
+            this.days = Integer.parseInt(properties.getProperty("islandActionImplementation.days"));
+            this.width = Integer.parseInt(properties.getProperty("islandActionImplementation.width"));
+            this.height = Integer.parseInt(properties.getProperty("islandActionImplementation.height"));
         } catch (
                 FileNotFoundException e) {
             throw new RuntimeException(e);
